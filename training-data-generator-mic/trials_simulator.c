@@ -13,15 +13,21 @@
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
+/* sort jobs in a queue and scheduling them */
 void sortTasksQueue(double *runtimes, int *cores, int *submit, int *mic, int *duedate, int policy);
+
 const char *getfield(char *line, int num);
+/* read the input file of jobs */
 void readModelFile(void);
+/* master function in the simulator */
 int master(int argc, char *argv[]);
+/* the function for manager jobs/tasks */
 int taskManager(int argc, char *argv[]);
+/* assign jobs to execution nodes */
 int * assignNode(int *workers_status, int *mic_status, int cores, int mic, int num_workers, int node);
+/* look like the main function */
 msg_error_t test_all(const char *platform_file, const char *application_file);
 
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
@@ -44,8 +50,9 @@ msg_error_t test_all(const char *platform_file, const char *application_file);
 #define CANDIDATE2 5
 #define SPT 6
 #define EDD 7
-#define DCRUC 8
+#define SCOUT 8
 
+/* struct for each job/task in the simulator */
 struct task_t{
     int numNodes;
     int numMICs;
@@ -258,18 +265,18 @@ msg_error_t test_all(const char *platform_file, const char *application_file){
     }
 
     // write lateness for plotting graph
-    FILE *latenesslog;
-    latenesslog = fopen("logs/lateness-log.txt", "w+");
-    int count = 0;
-    for(i = 0; i < number_of_tasks; i++){
-        fprintf(latenesslog, "%f,", lateness[i]);
-        count = count + 1;
-        if(count == 6){
-            count = 0;
-            fprintf(latenesslog, "\n");
-        }
-    }
-    fclose(latenesslog);
+    // FILE *latenesslog;
+    // latenesslog = fopen("logs/lateness-log.txt", "w+");
+    // int count = 0;
+    // for(i = 0; i < number_of_tasks; i++){
+    //     fprintf(latenesslog, "%f,", lateness[i]);
+    //     count = count + 1;
+    //     if(count == 6){
+    //         count = 0;
+    //         fprintf(latenesslog, "\n");
+    //     }
+    // }
+    // fclose(latenesslog);
 
     /* printf("------------------After simulation-------------------\n");
     printf("\t submit \t start_time \t runtime \t duedate \t end_time \t node\n");
@@ -299,10 +306,7 @@ msg_error_t test_all(const char *platform_file, const char *application_file){
         XBT_INFO("Average lateness: %f", AVGLateness);
         XBT_INFO("Simulation time %g", MSG_get_clock());
     }else if(!STATE){
-        // printf("%f\n", AVGSlowdown);
-        printf("AVGLateness = %f\n", AVGLateness);
-        printf("Throughput = %f\n", Throughput);
-        printf("AVGSlowdown = %f\n", AVGSlowdown);
+        printf("%f\n", AVGSlowdown);
         // printf("%f\n", Throughput);
     }
 

@@ -38,7 +38,7 @@ tasks_queue_nodes = []
 tasks_queue_runtimes = []
 tasks_queue_submit = []
 
-num_trials = 128000
+num_trials = 1280
 
 # Define required cores for each job
 required_cores = {"parallelism-sweep-cpu8":8, "threading-misc-histogram":2, "shared-vir-mem":2,
@@ -99,7 +99,6 @@ def convTimetoSeconds(str_val):
 marked_first_line = 0
 for line in file(filename):
     # split values in line
-    # row = re.split(" +", line.lstrip(" "))
     row = re.split("[\t, \!?]+", line.strip("\n"))
     
     # get submit_time
@@ -107,9 +106,9 @@ for line in file(filename):
         first_queued_time = convDatetimeForm(row[1]+" "+row[2])
     queued_time = convDatetimeForm(row[1]+" "+row[2])
     submit_time = (queued_time - first_queued_time).seconds
+    model_submit_times.append(submit_time)
     # print("{}: {}".format(type(queued_time), queued_time))
     # print("typeof(temp) - {}: {}".format(type(temp), temp))
-    model_submit_times.append(submit_time)
 
     # get job name
     job_name = row[8]
@@ -142,27 +141,8 @@ for line in file(filename):
     due_d = duedate.get(job_name) + submit_time
     model_duedate.append(due_d)
 
-    # if row[0] == ";":
-        # continue
-    # print(row)
-    # print("row[4] = %d, row[3] = %d" % (int(row[4]), int(row[3])))
-    # if int(row[4] > 0) and int(row[4]) <= 256 and int(row[3]) > 0:
-    #     model_num_nodes.append(int(row[4]))
-    #     model_run_times.append(int(row[3]))
-    #     model_submit_times.append(int(row[1]))
-
     marked_first_line += 1
     # print("%25s \t %5d \t %10d \t %5d \t\t\t %5d \t\t\t %5d \t\t\t %5d \t\t\t %5d" %(job_name, submit_time, req_cores, runtime, start_time, end_time, req_mic, due_d))
-# print("------------------------------------------------")
-# exit(1)
-
-# print("Pass reading file - lublin_256.swf")
-
-# Write file of jobs to compare with task-set0.csv/set1.csv
-# model_file = open("task-sets/model-file.csv", "w+")
-# for i in xrange(0, len(model_num_nodes)):
-#     model_file.write(str(model_run_times[i]) + "," + str(model_num_nodes[i]) + "," + str(model_submit_times[i]) + "\n")
-# model_file.close()
 
 """ Checking a list of waiting jobs at each timestamp """
 # for i in xrange(0, len(model_submit_times)):
@@ -196,16 +176,10 @@ for i in xrange(start, 2):
     # choose a random value
     range_chosen = len(model_run_times) - 1 - (num_tasks_queue + num_tasks_state)
     choose = random.randint(0, range_chosen)
-    # if i == 0:
-    #     choose = 599
-    # else:
-    #     choose = 1512
     print("choose a random value in [%d, %d]: choose = %d" % (0, range_chosen, choose))
 
     # get earliest submit
     earliest_submit = model_submit_times[choose]
-    # print("get earliest submit: %d" % earliest_submit)
-    # print("-------------------------------------------------------------")
 
     for j in xrange(0, 16):
         tasks_state_nodes.append(model_num_nodes[choose + j])
@@ -217,20 +191,12 @@ for i in xrange(start, 2):
         # add job name
         tasks_state_name.append(model_job_name[choose + j])
 
-        # write to file
+        # write to file - current-simulation.csv
         task_file.write(str(tasks_state_runtimes[j]) + ","
             + str(tasks_state_nodes[j]) + ","
             + str(tasks_state_submit[j]) + ","
             + str(tasks_state_mic[j]) + ","
             + str(tasks_state_duedate[j]) + "\n")
-
-        # write list of tasks to run on real server
-        # check_task_file.write(str(tasks_state_runtimes[j]) + ","
-        #     + str(tasks_state_nodes[j]) + ","
-        #     + str(tasks_state_submit[j]) + ","
-        #     + str(tasks_state_mic[j]) + ","
-        #     + str(tasks_state_duedate[j]) + ","
-        #     + tasks_state_name[j] + "\n")
     
     tasks_queue_nodes = []
     tasks_queue_runtimes = []
@@ -241,9 +207,8 @@ for i in xrange(start, 2):
     # add job name
     tasks_queue_name = []
 
-    # print("write tuples (S, Q) with Q = 32:")
     # print("num_tasts_state = %d, choose = %d" % (num_tasks_state, choose))
-    # print("-------------------------------------------------------------")
+    
     for j in xrange(0, 32):
         tasks_queue_nodes.append(model_num_nodes[num_tasks_state + choose + j])
         tasks_queue_runtimes.append(model_run_times[num_tasks_state + choose + j])
@@ -260,34 +225,20 @@ for i in xrange(start, 2):
             + str(tasks_queue_mic[j]) + ","
             + str(tasks_queue_duedate[j]) + "\n")
 
-        # write list of tasks to run on real server
-        # check_task_file.write(str(tasks_queue_runtimes[j]) + ","
-        #     + str(tasks_queue_nodes[j]) + ","
-        #     + str(tasks_queue_submit[j]) + ","
-        #     + str(tasks_queue_mic[j]) + ","
-        #     + str(tasks_queue_duedate[j]) + ","
-        #     + tasks_queue_name[j] + "\n")
     task_file.close()
-    # check_task_file.close()
 
     # permutation steps for creating dataset
-    # print("permutation step for creating dataset")
     shape = (num_trials, num_tasks_queue)
     perm_indices = np.empty(shape, dtype = int)
-    # print("shape = (%d, %d)" % (num_trials, num_tasks_queue))
-    # print("perm_indices = ", perm_indices)
+
     for j in xrange(0, num_trials):
         perm_indices[j] = np.arange(32)
-    # print("perm_indices after arranging: ", perm_indices)
 
-    # perform simulator for job submission
+    # prepare a list of jobs for simulation
     subprocess.call(['cp task-sets/set-' + str(i) + '.csv' ' current-simulation.csv'], shell = True)
-    # subprocess.call(['cp task-sets/real-task-' + str(i) + '.csv' ' real-task.csv'], shell = True)
-    # subprocess.call(['cp current-simulation.csv ./current-simulation' + str(i) + '.csv'], shell = True)
-    exit(1)
 
+    # simulate job submission
     subprocess.call(['./trials_simulator simple_cluster.xml deployment_cluster.xml -state > states/set' + str(i) + '.csv'], shell = True)
-    # subprocess.call(['./trials_simulator simple_cluster.xml deployment_cluster.xml >> logfile.out'], shell = True)
 
     # check result temp data file
     if(os.path.exists("result-temp.dat") == True):
@@ -303,25 +254,14 @@ for i in xrange(start, 2):
     shuffle_tasks_queue_submit = np.copy(tasks_queue_submit)
     shuffle_tasks_queue_mic = np.copy(tasks_queue_mic)
     shuffle_tasks_queue_duedate = np.copy(tasks_queue_duedate)
-    # print("orig_submit \t orig_nodes \t orig_runtimes")
-    # for s in xrange(0, 16):
-    #     print("%d \t %d \t %d" % (tasks_state_submit[s], tasks_state_nodes[s], tasks_state_runtimes[s]))
-    # for q in xrange(0, 32):
-    #     print("%d \t %d \t %d" % (tasks_queue_submit[q], tasks_queue_nodes[q], tasks_queue_runtimes[q]))
 
-    # print the process of permutaion
-    # print("j(0-9) \t k(0-31) \t choose(ran0-31) \t buf_run \t shuf_run[choose] \t shuf_run[k] \t orig_val_task \t buf_index(perm_indices[j, choose])")
-    # print("--------------- After permutation -------------------")
-    # print("submit \t nodes \t runtimes")
+    # the process of permutaion
     for j in xrange(0, num_trials):
-    # for j in xrange(0, 1):
         # iteration file
         iteration_file = open("current-simulation.csv", "w+")
 
         for k in xrange(0, 32):
             choose = random.randint(0, 31)
-            # print("[permutation loop] choose = ", choose)
-
             # permute the position of shuffle_tasks_queues
             buffer_runtimes = shuffle_tasks_queue_runtimes[choose]
             buffer_nodes = shuffle_tasks_queue_nodes[choose]
@@ -343,28 +283,22 @@ for i in xrange(start, 2):
 
             # get the buffer index
             buffer_index = perm_indices[j, choose]
-            # print("buffer_index = ", buffer_index)
 
             # swap perm_indices and buffer_index
             perm_indices[j, choose] = perm_indices[j, k]
             perm_indices[j, k] = buffer_index
-            # print("%d \t %d \t %d \t %d \t %d \t %d \t %d \t %d" % (j, k, choose, buffer_runtimes, shuffle_tasks_queue_runtimes[choose], shuffle_tasks_queue_runtimes[k], tasks_queue_runtimes[choose], buffer_index))
 
         for k in xrange(0, 16):
             iteration_file.write(str(tasks_state_runtimes[k]) + "," + str(tasks_state_nodes[k]) + "," + str(tasks_state_submit[k]) + "," + str(tasks_state_mic[k]) + "," + str(tasks_state_duedate[k]) + "\n")
-            # print("%d \t %d \t %d" % (tasks_state_submit[k], tasks_state_nodes[k], tasks_state_runtimes[k]))
 
         for k in xrange(0, 32):
             iteration_file.write(str(tasks_queue_runtimes[perm_indices[j,k]]) + "," + str(tasks_queue_nodes[perm_indices[j,k]]) + "," + str(tasks_queue_submit[perm_indices[j,k]]) + "," + str(tasks_queue_mic[perm_indices[j,k]]) + "," + str(tasks_queue_duedate[perm_indices[j,k]]) + "\n")
-            # print("%d \t %d \t %d" % (tasks_queue_submit[perm_indices[j,k]], tasks_queue_nodes[perm_indices[j,k]], tasks_queue_runtimes[perm_indices[j,k]]))
         
         iteration_file.close()
-        # print("perm_indices after arranging: ", perm_indices)
-        # print("-----------------------------------------------")
+        
         subprocess.call(['./trials_simulator simple_cluster.xml deployment_cluster.xml >> result-temp.dat'], shell=True)
-        # subprocess.call(['./trials_simulator simple_cluster.xml deployment_cluster.xml >> result-temp' + str(i) +'.dat'], shell=True)
-        # exit(1)
     
+    # init arrays to store distributions of result
     output = ""
     exp_sum_slowdowns = 0.0
     distribution = np.zeros(num_tasks_queue)
@@ -372,25 +306,17 @@ for i in xrange(start, 2):
     exp_slowdowns = np.zeros(num_trials)
     state = ""
 
-    # print("distribution: ", distribution)
-    # print("exp_first_choice: ", exp_first_choice)
-    # print("exp_slowdowns: ", exp_slowdowns)
-
-    task_sets_prefix = "task-sets/set-"
-    results_prefix = "results/set"
+    # prefix
     states_prefix = "states/set"
 
     # print("---------- Analyze the results -------------")
-    # print("trial \t first_job_id:")
     for trialID in xrange(0, num_trials):
         exp_first_choice[trialID] = perm_indices[trialID, 0]
-        # print("%d \t %d" % (trialID, perm_indices[trialID, 0]))
 
     trialID = 0
     result_file = open("result-temp.dat", "r")
     lines = result_file.readlines()
-    # print("len(lines) = %d" % len(lines))
-    # print(lines)
+    
     if len(lines) != num_trials:
         result_file.close()
         i = i - 1
@@ -405,15 +331,8 @@ for i in xrange(start, 2):
     for line in file(states_prefix + str(i) + ".csv"):
         state = str(line)
 
-    # print("trialID \t exp_first_choice \t exp_slowdowns")
     for trialID in xrange(0, len(exp_slowdowns)):
         distribution[exp_first_choice[trialID]] += exp_slowdowns[trialID]
-        # print("%d \t distribution[exp_first_choice[%d](%d)] = %f" % (trialID, trialID, exp_first_choice[trialID], distribution[exp_first_choice[trialID]]))
-
-
-    # print("distribution:")
-    # for i_dis in xrange(0, len(distribution)):
-    #     print("distribution[%d]: %f" % (i_dis, distribution[i_dis]))
 
     # normalize the result
     for k in xrange(0, len(distribution)):
