@@ -308,14 +308,14 @@ msg_error_t call_simgrid_module(const char *platform_file, const char *applicati
     // fclose(logfile);
 
     if(VERBOSE){
-        // XBT_INFO("Average bounded slowdown: %f", AVGSlowdown);
-        // XBT_INFO("Throughput: %f", Throughput);
+        XBT_INFO("Average bounded slowdown: %f", AVGSlowdown);
+        XBT_INFO("Throughput: %f", Throughput);
         XBT_INFO("Average lateness: %f", AVGLateness);
         XBT_INFO("Simulation time %g", MSG_get_clock());
     }else if(!STATE){
-        // printf("%f\n", AVGLateness);
+        printf("%f\n", AVGLateness);
         // printf("%f\n", Throughput);
-        printf("%f\n", AVGSlowdown);
+        // printf("%f\n", AVGSlowdown);
     }
 
     /* free memory */
