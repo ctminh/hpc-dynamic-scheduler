@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 plt.rcdefaults()
 
 # path to the workload file
-filename = "../HPCworkloads/ANL-Intrepid-2009-1.swf"
+filename = "../HPCworkloads/CTC-SP2-1996-3.1-cln.swf"
 
 model_num_nodes = []
 model_run_times = []
@@ -25,7 +25,7 @@ tasks_queue_submit = []
 
 SECONDS_IN_A_DAY = 86400
 SIM_NUM_DAYS = 15
-NUM_EXPERIMENTS = 15
+NUM_EXPERIMENTS = 22
 
 slow_fcfs = []
 slow_spt = []
@@ -44,7 +44,7 @@ for line in file(filename):
     row = re.split(" +", line.lstrip(" "))
     if row[0].startswith(";"):
         continue
-    
+
     if int(row[4]) > 0 and int(row[3]) > 0:
         model_run_times.append(int(row[3]))
         model_num_nodes.append(int(row[4]))
@@ -53,17 +53,16 @@ for line in file(filename):
 # estimate timespan
 timespan = np.max(model_submit_times) - np.min(model_submit_times)
 
-print('Performing scheduling performance test for the workload trace ANL-Intrepid-2009-1.\n' +
+print('Performing scheduling performance test for the workload trace CTC-SP2-1996-3.1-cln.\n' +
       'Configuration: Using actual runtimes, backfilling disabled')
 
 # generate the job-submission file to run the simulation
 choose = 0
-for i in xrange(0, NUM_EXPERIMENTS):
+for i in xrange(0, NUM_EXPERIMENTS):  # 1e7
     task_file = open("initial-simulation-submit.csv", "w+")
     tasks_state_nodes = []
     tasks_state_runtimes = []
     tasks_state_submit = []
-
     earliest_submit = model_submit_times[choose]
     for j in xrange(0, 16):
         tasks_state_nodes.append(model_num_nodes[choose+j])
@@ -78,6 +77,7 @@ for i in xrange(0, NUM_EXPERIMENTS):
     tasks_queue_submit = []
     j = 0
     while model_submit_times[choose+num_tasks_state+j] - earliest_submit <= SECONDS_IN_A_DAY * SIM_NUM_DAYS:
+        #choose = random.randint(0,len(model_run_times)-1)
         tasks_queue_nodes.append(model_num_nodes[num_tasks_state+choose+j])
         tasks_queue_runtimes.append(model_run_times[num_tasks_state+choose+j])
         tasks_queue_submit.append(model_submit_times[num_tasks_state+choose+j] - earliest_submit)
@@ -92,28 +92,28 @@ for i in xrange(0, NUM_EXPERIMENTS):
     print('Performing scheduling experiment %d. Number of tasks=%d' % (i+1, number_of_tasks))
 
     _buffer = open("plot-temp.dat", "w+")
-    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -nj ' +
-                     str(number_of_tasks)], shell=True, stdout=_buffer)
-    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -spt -nj ' +
-                     str(number_of_tasks)], shell=True, stdout=_buffer)
-    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -lpt -nj ' +
-                     str(number_of_tasks)], shell=True, stdout=_buffer)
-    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -wfp3 -nj ' +
-                     str(number_of_tasks)], shell=True, stdout=_buffer)
-    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -unicef -nj ' +
-                     str(number_of_tasks)], shell=True, stdout=_buffer)
-    # subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -edd -nj ' +
+    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -nj ' +
+                    str(number_of_tasks)], shell=True, stdout=_buffer)
+    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -spt -nj ' +
+                    str(number_of_tasks)], shell=True, stdout=_buffer)
+    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -lpt -nj ' +
+                    str(number_of_tasks)], shell=True, stdout=_buffer)
+    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -wfp3 -nj ' +
+                    str(number_of_tasks)], shell=True, stdout=_buffer)
+    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -unicef -nj ' +
+                    str(number_of_tasks)], shell=True, stdout=_buffer)
+    # subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -edd -nj ' +
     #                  str(number_of_tasks)], shell=True, stdout=_buffer)
-    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -easy -nj ' +
-                     str(number_of_tasks)], shell=True, stdout=_buffer)
-    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -f1 -nj ' +
-                     str(number_of_tasks)], shell=True, stdout=_buffer)
-    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -f2 -nj ' +
-                     str(number_of_tasks)], shell=True, stdout=_buffer)
-    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -f3 -nj ' +
-                     str(number_of_tasks)], shell=True, stdout=_buffer)
-    subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_anl.xml -f4 -nj ' +
-                     str(number_of_tasks)], shell=True, stdout=_buffer)
+    # subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -easy -nj ' +
+    #                  str(number_of_tasks)], shell=True, stdout=_buffer)
+    # subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -f1 -nj ' +
+    #                  str(number_of_tasks)], shell=True, stdout=_buffer)
+    # subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -f2 -nj ' +
+    #                  str(number_of_tasks)], shell=True, stdout=_buffer)
+    # subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -f3 -nj ' +
+    #                  str(number_of_tasks)], shell=True, stdout=_buffer)
+    # subprocess.call(['./sched-simulator-runtime simgrid-xmls/plat_day.xml simgrid-xmls/deployment_ctcsp2.xml -f4 -nj ' +
+    #                  str(number_of_tasks)], shell=True, stdout=_buffer)
     _buffer.close()
 
     _buffer = open("plot-temp.dat", "r")
@@ -246,7 +246,7 @@ plt.setp(axes, xticks=[y+1 for y in range(len(all_data))],
 plt.tick_params(axis='both', which='major', labelsize=45)
 plt.tick_params(axis='both', which='minor', labelsize=45)
 
-plt.savefig('plots/sched_perf_on_anl_runtime.pdf', format='pdf',
+plt.savefig('plots/sched_perf_on_ctcsp2_runtime.pdf', format='pdf',
             dpi=1000, bbox_inches='tight')
 
 # statistics - medians
@@ -272,4 +272,4 @@ for e in error:
     i = i+1
 
 # show the end
-print('Boxplot saved in file plots/sched_perf_on_anl_runtime.pdf')
+print('Boxplot saved in file plots/sched_perf_on_ctcsp2_runtime.pdf')
