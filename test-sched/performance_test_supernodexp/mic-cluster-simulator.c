@@ -313,8 +313,8 @@ msg_error_t call_simgrid_module(const char *platform_file, const char *applicati
         XBT_INFO("Average lateness: %f", AVGLateness);
         XBT_INFO("Simulation time %g", MSG_get_clock());
     }else if(!STATE){
-        printf("%f\n", AVGLateness);
-        // printf("%f\n", Throughput);
+        // printf("%f\n", AVGLateness);
+        printf("%f\n", Throughput);
         // printf("%f\n", AVGSlowdown);
     }
 
@@ -870,14 +870,14 @@ void sortTasksQueue(double *runtimes, int *cores, int *submit, int *mic, int *du
                 // printf("task %d: h_values = %f\n", (i + NUM_TASKS_STATE), h_values[i]);
 	            break;
             case CANDIDATE1:
-                //h_values[i] = log10(runtimes[i]) * sqrt(cores[i]); //candidate 1 (increasing order)
+                // h_values[i] = log10(runtimes[i]) * sqrt(cores[i]); //candidate 1 (increasing order)
                 // h_values[i] = (0.0075611 * log10(runtimes[i])) + (0.0113013 * log10(cores[i])); //candidate 1 (increasing order)
-                h_values[i] = duedate[i] * (-0.0000000314 * runtimes[i] * (-0.0036668288 * cores[i])) + (0.0103053379 * log10(submit[i]));
+                h_values[i] = duedate[i] * (-0.0000000314 * runtimes[i] * (-0.0036668288 * cores[i]) + mic[i]) + (0.0103053379 * log10(submit[i]));
                 break;
             case CANDIDATE2:
-                //h_values[i] = log10(runtimes[i]) * cores[i]; //candidate 2 
+                // h_values[i] = log10(runtimes[i]) * cores[i]; //candidate 2 
                 h_values[i] = (0.0066197 * log10(runtimes[i])) + (0.0039650 * sqrt(cores[i])); //candidate 2
-                //h_values[i] = (0.0081926 * log10(runtimes[i])) + (0.0173701* (1.0 / cores[i])); //candidate 2
+                // h_values[i] = (0.0081926 * log10(runtimes[i])) + (0.0173701* (1.0 / cores[i])); //candidate 2
                 break;
             case CANDIDATE3:
                 h_values[i] = 49.5155372 * sqrt(runtimes[i]) / (129.3129007 * (inv(cores[i]))) + 219.4333513 * log10(submit[i]) / (7004.1400155 * log10(duedate[i]) + mic[i]);

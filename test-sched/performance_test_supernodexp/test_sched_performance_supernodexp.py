@@ -261,7 +261,8 @@ for i in xrange(0, NUM_EXPERIMENTS):
     _buffer.close()
 
 # write the test-plt-temp.dat for testing boxplot
-_test_buffer = open("plot-data.dat", "w+")
+# _test_buffer = open("plot-lateness-supernodexp.dat", "w+")
+_test_buffer = open("plot-throughput-supernodexp.dat", "w+")
 for i in xrange(0, NUM_EXPERIMENTS):
     _test_buffer.write(str(slowdown_fcfs[i]) + ","
                 + str(slowdown_spt[i]) + ","
@@ -299,10 +300,6 @@ error.append(np.std(slowdown_c2))
 error.append(np.std(slowdown_c3))
 error.append(np.std(slowdown_c4))
 
-# draw the graph
-# plt.rc("font", size=45)
-# plt.figure(figsize=(16,14))
-
 # arrange data
 all_data = []
 all_data.append(slowdown_fcfs)
@@ -319,82 +316,12 @@ all_data.append(slowdown_c4)
 # medians for the boxplot
 all_medians = []
 
-# create axes for the boxplot
-# axes = plt.axes()
-
-# converting data to the numpy format
-# np_converted_data = np.array(all_data)
-
-# for drawing arrows which dedicate the out values on the box plot
-# OUT_POLICIES = 10
-# MAX_OUT = [1,1,1,1,1,1,1,1,1,1]
-# outliers = np.zeros((OUT_POLICIES,max(MAX_OUT))) # a list: 6x2 [[ 0.  0.], [ 0.   0.], ...]
-
-# for i in range(0,OUT_POLICIES):
-#     temp = np_converted_data[i,:] # get: fcfs, spt, lpt, wfp3, unicef, edd
-#     for j in range(0,MAX_OUT[i]):
-#         _max = np.max(temp) # get max: fcfs, spt, lpt, wfp3, unicef, edd (run 2-loop)
-#         outliers[i,j] = _max
-#         temp = np.delete(temp, np.argmax(temp)) # why: the last one: it is deleted 2 max-values
-
-# create xsticks
-# xticks = [y+1 for y in range(len(all_data))] # the number of labels for the x-axis
-
-# draw the value-points of each scheduling-algorithm with the positions on x-axis
-# plt.plot(xticks[0:1], np_converted_data[0:1], 'o', color='darkorange')
-# plt.plot(xticks[1:2], np_converted_data[1:2], 'o', color='darkorange')
-# plt.plot(xticks[2:3], np_converted_data[2:3], 'o', color='darkorange')
-# plt.plot(xticks[3:4], np_converted_data[3:4], 'o', color='darkorange')
-# plt.plot(xticks[4:5], np_converted_data[4:5], 'o', color='darkorange')
-# plt.plot(xticks[5:6], np_converted_data[5:6], 'o', color='darkorange')
-# plt.plot(xticks[6:7], np_converted_data[6:7], 'o', color='darkorange')
-# plt.plot(xticks[7:8], np_converted_data[7:8], 'o', color='darkorange')
-# plt.plot(xticks[8:9], np_converted_data[8:9], 'o', color='darkorange')
-# plt.plot(xticks[9:10], np_converted_data[9:10], 'o', color='darkorange')
-
-# set the y-axis lim
-# plt.ylim((0, 100))
-
-# x_offset and y_low ???
-# x_offset = [0.255, 0.255, 0.255, 0.255, 0.255, 0.255, 0.255, 0.255, 0.255, 0.255]
-# y_low = [25, 25, 25, 25, 25, 25, 25, 25, 25, 25]
-
-# outliers now
-# [[ 100.182382    0.      ]
-#  [ 199.393931    0.      ]
-#  [  32.472593    0.      ]
-#  [  28.471696    0.      ]
-#  [  30.08633     0.      ]
-#  [  20.354792    0.      ]
-#  [        ...            ]]
-
-# for i in range(0, OUT_POLICIES):
-#     output = '%.1f' % (outliers[i,0])
-#     plt.annotate(output, xy=(xticks[i], 27), xytext=(xticks[i]-x_offset[i], y_low[i]),
-#                         arrowprops=dict(facecolor='black', shrink=0.05),fontsize=24)
-
 # medians for the boxplot
 for p in all_data:
     all_medians.append(np.median(p))
 
-# plot box plot
-# plt.boxplot(all_data, showfliers=False)
-
-# adding horizontal grid lines
-# for ax in axes:
-# axes.yaxis.grid(True)
-# axes.set_xticks([y+1 for y in range(len(all_data))])
-
 # add x-tick labels
 xticklabels=['FCFS', 'SPT', 'LPT', 'WFP3', 'UNI', 'EDD', 'C1', 'C2', 'C3', 'C4']
-# plt.setp(axes, xticks=[y+1 for y in range(len(all_data))], xticklabels=['FCFS', 'SPT', 'LPT', 'WFP3', 'UNI', 'EDD', 'C1', 'C2', 'C3', 'C4'])
-
-# plt.tick_params(axis='both', which='major', labelsize=28)
-# plt.tick_params(axis='both', which='minor', labelsize=28)
-
-# save image to file
-# plt.savefig('plots/supernode-xp.pdf', format='pdf', dpi=1000, bbox_inches='tight')
-# print('Boxplot saved in file supernode-xp.pdf')
 
 # plt.show()
 
@@ -416,7 +343,5 @@ i=0
 for e in error:
     print('%s=%.2f' % (xticklabels[i],e))
     i=i+1
-
-# print('Boxplot saved in file supernode-xp.pdf')
 
 #print("%d" % random.randint(2,8))

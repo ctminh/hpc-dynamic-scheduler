@@ -23,7 +23,7 @@ slowdown_c3 = []
 slowdown_c4 = []
 
 # file input to read
-filename = "./plot-data.dat"
+filename = "./plot-throughput-supernodexp.dat"
 # read file
 for line in file(filename):
     row = re.split(",", line.strip("\n"))
@@ -109,18 +109,18 @@ plt.plot(xticks[1:2], np_converted_data[1:2], 'o', color='darkorange')
 plt.plot(xticks[2:3], np_converted_data[2:3], 'o', color='darkorange')
 plt.plot(xticks[3:4], np_converted_data[3:4], 'o', color='darkorange')
 plt.plot(xticks[4:5], np_converted_data[4:5], 'o', color='darkorange')
-# plt.plot(xticks[5:6], np_converted_data[5:6], 'o', color='darkorange')
 plt.plot(xticks[5:6], np_converted_data[5:6], 'o', color='darkorange')
+# plt.plot(xticks[5:6], np_converted_data[6:7], 'o', color='darkorange')
 plt.plot(xticks[6:7], np_converted_data[6:7], 'o', color='darkorange')
 # plt.plot(xticks[8:9], np_converted_data[8:9], 'o', color='darkorange')
 # plt.plot(xticks[9:10], np_converted_data[9:10], 'o', color='darkorange')
 
 # set the y-axis lim
-# plt.ylim((40, 100))
+# plt.ylim((0, 50))
 
 # x_offset and y_low ???
 x_offset = [0.255, 0.255]
-y_low = [92, 92]
+y_low = [40, 40]
 
 # outliers now
 # [[ 100.182382    0.      ]
@@ -133,7 +133,7 @@ y_low = [92, 92]
 
 # for i in range(0, OUT_POLICIES):
 #     output = '%.1f' % (outliers[i,0])
-#     plt.annotate(output, xy=(xticks[i], 97), xytext=(xticks[i]-x_offset[i], y_low[i]),
+#     plt.annotate(output, xy=(xticks[i], 48), xytext=(xticks[i]-x_offset[i], y_low[i]),
 #                         arrowprops=dict(facecolor='black', shrink=0.05),fontsize=24)
 
 # medians for the boxplot
@@ -164,7 +164,7 @@ plt.tick_params(axis='both', which='minor', labelsize=28)
 # plt.savefig('plots/throughput-supernode-xp.pdf', format='pdf', dpi=1000, bbox_inches='tight')
 # print('Boxplot saved in file throughput-slowdown-supernode-xp.pdf')
 # save image to file - for lateness
-plt.savefig('plots/lateness-supernode-xp.pdf', format='pdf', dpi=1000, bbox_inches='tight')
-print('Boxplot saved in file lateness-supernode-xp.pdf')
+plt.savefig('plots/throughput-supernode-xp.pdf', format='pdf', dpi=1000, bbox_inches='tight')
+print('Boxplot saved in file throughput-supernode-xp.pdf')
 
 plt.show()
