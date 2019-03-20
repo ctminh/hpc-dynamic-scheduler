@@ -23,8 +23,7 @@ slowdown_c3 = []
 slowdown_c4 = []
 
 # file input to read
-filename = "./plot-slowdown-anl-0-mics.dat"
-# filename = "./plot-data-anl-25-mics.dat"
+filename = "./plot-slowdown-anl-25-mics.dat"
 
 # read file
 for line in file(filename):
@@ -49,8 +48,8 @@ performance.append(np.mean(slowdown_unicef))
 # performance.append(np.mean(slowdown_edd))
 performance.append(np.mean(slowdown_c1))
 performance.append(np.mean(slowdown_c2))
-# performance.append(np.mean(slowdown_c3))
-# performance.append(np.mean(slowdown_c4))
+performance.append(np.mean(slowdown_c3))
+performance.append(np.mean(slowdown_c4))
 
 error = []
 error.append(np.std(slowdown_fcfs))
@@ -61,8 +60,8 @@ error.append(np.std(slowdown_unicef))
 # error.append(np.std(slowdown_edd))
 error.append(np.std(slowdown_c1))
 error.append(np.std(slowdown_c2))
-# error.append(np.std(slowdown_c3))
-# error.append(np.std(slowdown_c4))
+error.append(np.std(slowdown_c3))
+error.append(np.std(slowdown_c4))
 
 # draw the graph
 plt.rc("font", size=45)
@@ -78,8 +77,8 @@ all_data.append(slowdown_unicef)
 # all_data.append(slowdown_edd)
 all_data.append(slowdown_c1)
 all_data.append(slowdown_c2)
-# all_data.append(slowdown_c3)
-# all_data.append(slowdown_c4)
+all_data.append(slowdown_c3)
+all_data.append(slowdown_c4)
 
 # medians for the boxplot
 all_medians = []
@@ -92,7 +91,7 @@ np_converted_data = np.array(all_data)
 
 # x_offset and y_low ???
 x_offset = [0.255, 0.255, 0.255, 0.255]
-y_low = [85, 85, 85, 85]
+y_low = [33, 33, 33, 33]
 
 # for drawing arrows which dedicate the out values on the box plot
 OUT_POLICIES = 4
@@ -135,11 +134,11 @@ plt.plot(xticks[4:5], np_converted_data[4:5], 'o', color='darkorange')
 # plt.plot(xticks[5:6], np_converted_data[5:6], 'o', color='darkorange')
 plt.plot(xticks[5:6], np_converted_data[5:6], 'o', color='darkorange')
 plt.plot(xticks[6:7], np_converted_data[6:7], 'o', color='darkorange')
-# plt.plot(xticks[8:9], np_converted_data[8:9], 'o', color='darkorange')
-# plt.plot(xticks[9:10], np_converted_data[9:10], 'o', color='darkorange')
+plt.plot(xticks[7:8], np_converted_data[7:8], 'o', color='darkorange')
+plt.plot(xticks[8:9], np_converted_data[8:9], 'o', color='darkorange')
 
 # set the y-axis lim
-plt.ylim((0, 100))
+plt.ylim((0, 40))
 
 # outliers now
 # [[ 100.182382    0.      ]
@@ -151,13 +150,13 @@ plt.ylim((0, 100))
 #  [        ...            ]]
 
 output_fcfs = '%.1f' % (outliers[0,0])
-plt.annotate(output_fcfs, xy=(xticks[0], 95), xytext=(xticks[0]-x_offset[0], y_low[0]),
+plt.annotate(output_fcfs, xy=(xticks[0],38), xytext=(xticks[0]-x_offset[0], y_low[0]),
                     arrowprops=dict(facecolor='black', shrink=0.05),fontsize=24)
 # output_spt = '%.1f' % (outliers[1,0])
 # plt.annotate(output_spt, xy=(xticks[1], 2900), xytext=(xticks[1]-x_offset[1], y_low[1]),
 #                     arrowprops=dict(facecolor='black', shrink=0.05),fontsize=24)
 output_lpt = '%.1f' % (outliers[2,0])
-plt.annotate(output_lpt, xy=(xticks[2], 95), xytext=(xticks[2]-x_offset[2], y_low[2]),
+plt.annotate(output_lpt, xy=(xticks[2], 38), xytext=(xticks[2]-x_offset[2], y_low[2]),
                     arrowprops=dict(facecolor='black', shrink=0.05),fontsize=24)
 # output_wfp3 = '%.1f' % (outliers[3,0])
 # plt.annotate(output_wfp3, xy=(xticks[3], 2900), xytext=(xticks[3]-x_offset[3], y_low[3]),
@@ -177,9 +176,9 @@ axes.set_xticks([y+1 for y in range(len(all_data))])
 
 # add x-tick labels
 # xticklabels=['FCFS', 'SPT', 'LPT', 'WFP3', 'UNI', 'EDD', 'C1', 'C2', 'C3', 'C4']
-xticklabels=['FCFS', 'SPT', 'LPT', 'WFP3', 'UNI', 'C1', 'C2']
+xticklabels=['FCFS', 'SPT', 'LPT', 'WFP3', 'UNI', 'C1', 'C2', 'C3', 'C4']
 # plt.setp(axes, xticks=[y+1 for y in range(len(all_data))], xticklabels=['FCFS', 'SPT', 'LPT', 'WFP3', 'UNI', 'EDD', 'C1', 'C2', 'C3', 'C4'])
-plt.setp(axes, xticks=[y+1 for y in range(len(all_data))], xticklabels=['FCFS', 'SPT', 'LPT', 'WFP3', 'UNI', 'C1', 'C2'])
+plt.setp(axes, xticks=[y+1 for y in range(len(all_data))], xticklabels=['FCFS', 'SPT', 'LPT', 'WFP3', 'UNI', 'C1', 'C2', 'C3', 'C4'])
 
 plt.tick_params(axis='both', which='major', labelsize=28)
 plt.tick_params(axis='both', which='minor', labelsize=28)
@@ -191,7 +190,7 @@ plt.tick_params(axis='both', which='minor', labelsize=28)
 # plt.savefig('plots/throughput-supernode-xp.pdf', format='pdf', dpi=1000, bbox_inches='tight')
 # print('Boxplot saved in file throughput-slowdown-supernode-xp.pdf')
 # save image to file - for lateness
-plt.savefig('figures/slowdown-anl-0-mic.pdf', format='pdf', dpi=1000, bbox_inches='tight')
-print('Boxplot saved in file slowdown-anl-0-mic.pdf')
+plt.savefig('figures/slowdown-anl-25-mic-updated.pdf', format='pdf', dpi=1000, bbox_inches='tight')
+print('Boxplot saved in file slowdown-anl-25-mic.pdf')
 
 plt.show()
